@@ -3,8 +3,8 @@ namespace iTracker
 {
     public static class PrivateKeys
     {
-        public const string StorageConnection = "<INSERT_STORAGE_CONNECTION_STRING_HERE>";
+        public const string StorageConnection = "INSERT-CONNECTION-STRING";
 
-
+        public const string StorageKey = "INSERT-STORAGE-KEY";
     }
 }
