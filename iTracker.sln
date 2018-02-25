@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iTracker", "iTracker\iTracker.csproj", "{8C304CD2-0DE3-48DA-AAB4-462A5B031BC6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|iPhoneSimulator = Debug|iPhoneSimulator
+		Release|iPhone = Release|iPhone
+		Release|iPhoneSimulator = Release|iPhoneSimulator
+		Debug|iPhone = Debug|iPhone
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C304CD2-0DE3-48DA-AAB4-462A5B031BC6}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{8C304CD2-0DE3-48DA-AAB4-462A5B031BC6}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{8C304CD2-0DE3-48DA-AAB4-462A5B031BC6}.Release|iPhone.ActiveCfg = Release|iPhone
+		{8C304CD2-0DE3-48DA-AAB4-462A5B031BC6}.Release|iPhone.Build.0 = Release|iPhone
+		{8C304CD2-0DE3-48DA-AAB4-462A5B031BC6}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{8C304CD2-0DE3-48DA-AAB4-462A5B031BC6}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{8C304CD2-0DE3-48DA-AAB4-462A5B031BC6}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{8C304CD2-0DE3-48DA-AAB4-462A5B031BC6}.Debug|iPhone.Build.0 = Debug|iPhone
+	EndGlobalSection
+EndGlobal
