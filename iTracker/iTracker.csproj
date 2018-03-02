@@ -114,10 +114,14 @@
     <Folder Include="Helpers\" />
     <Folder Include="Models\" />
     <Folder Include="Services\" />
+    <Folder Include="Storyboards\" />
+    <Folder Include="ViewControllers\" />
+    <Folder Include="Classes\" />
+    <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
-    <InterfaceDefinition Include="LaunchScreen.storyboard" />
-    <InterfaceDefinition Include="Main.storyboard" />
+    <InterfaceDefinition Include="Storyboards\LaunchScreen.storyboard" />
+    <InterfaceDefinition Include="Storyboards\Main.storyboard" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -127,28 +131,28 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="FirstViewController.cs" />
-    <Compile Include="SecondViewController.cs" />
-    <Compile Include="FirstViewController.designer.cs">
-      <DependentUpon>FirstViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SecondViewController.designer.cs">
-      <DependentUpon>SecondViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TrackingView.cs" />
-    <Compile Include="TrackingView.designer.cs">
-      <DependentUpon>TrackingView.cs</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\Permissions.cs" />
-    <Compile Include="TrackingViewController.cs" />
-    <Compile Include="TrackingViewController.designer.cs">
-      <DependentUpon>TrackingViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SessionDelegate.cs" />
-    <Compile Include="ETMask.cs" />
     <Compile Include="Models\GazeSnapshot.cs" />
     <Compile Include="Helpers\PrivateKeys.cs" />
-    <Compile Include="Services\DataStore.cs" />
+    <Compile Include="Services\AzureTableStorage.cs" />
+    <Compile Include="ViewControllers\FirstViewController.cs" />
+    <Compile Include="ViewControllers\FirstViewController.designer.cs">
+      <DependentUpon>FirstViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewControllers\SecondViewController.cs" />
+    <Compile Include="ViewControllers\SecondViewController.designer.cs">
+      <DependentUpon>SecondViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewControllers\TrackingViewController.cs" />
+    <Compile Include="ViewControllers\TrackingViewController.designer.cs">
+      <DependentUpon>TrackingViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Classes\ARKitSessionDelegate.cs" />
+    <Compile Include="Views\TrackingView.cs" />
+    <Compile Include="Views\TrackingView.designer.cs">
+      <DependentUpon>TrackingView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Classes\GazeTrackingSession.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

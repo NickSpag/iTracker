@@ -13,9 +13,7 @@ using CoreImage;
 
 namespace iTracker
 {
-    public partial class SecondViewController : UIViewController,
-                                                IARSessionDelegate,
-                                                IARSessionObserver
+    public partial class SecondViewController : UIViewController, IARSessionDelegate
     {
         private ARSession currentSession;
         private ARFaceAnchor currentFaceAnchor;
@@ -97,7 +95,6 @@ namespace iTracker
 
             try
             {
-
                 pixelBuffer = frame.CapturedImage;
 
             }
@@ -179,6 +176,8 @@ namespace iTracker
         {
             if (anchors.First() is ARFaceAnchor faceAnchor)
             {
+                //currentFaceAnchor = faceAnchor;
+
                 //System.Console.WriteLine("");
                 //System.Console.WriteLine("New matrix");
                 //System.Console.WriteLine("{0}.{0}.{0}.{0}", faceAnchor.Transform.M11,
@@ -250,32 +249,32 @@ namespace iTracker
 
     }
 
-    public static class ARSessionObserverExtensions
-    {
-        #region ARSessionObserver methods
-        [Export("session:cameraDidChangeTrackingState:")]
-        public static void CameraDidChangeTrackingState(this IARSessionObserver This, ARSession session, ARCamera camera)
-        {
-            System.Console.WriteLine("camera changed tracking status");
-        }
+    //public static class ARSessionObserverExtensions
+    //{
+    //    #region ARSessionObserver methods
+    //    [Export("session:cameraDidChangeTrackingState:")]
+    //    public static void CameraDidChangeTrackingState(this IARSessionObserver This, ARSession session, ARCamera camera)
+    //    {
+    //        System.Console.WriteLine("camera changed tracking status");
+    //    }
 
-        [Export("session:didOutputAudioSampleBuffer:")]
-        public static void DidOutputAudioSampleBuffer(this IARSessionObserver This, ARSession session, CMSampleBuffer audioSampleBuffer)
-        {
+    //    [Export("session:didOutputAudioSampleBuffer:")]
+    //    public static void DidOutputAudioSampleBuffer(this IARSessionObserver This, ARSession session, CMSampleBuffer audioSampleBuffer)
+    //    {
 
-        }
+    //    }
 
-        [Export("sessionInterruptionEnded:")]
-        public static void InterruptionEnded(this IARSessionObserver This, ARSession session)
-        {
-            System.Console.WriteLine("interruption ended");
-        }
+    //    [Export("sessionInterruptionEnded:")]
+    //    public static void InterruptionEnded(this IARSessionObserver This, ARSession session)
+    //    {
+    //        System.Console.WriteLine("interruption ended");
+    //    }
 
-        [Export("sessionWasInterrupted:")]
-        public static void WasInterrupted(this IARSessionObserver This, ARSession session)
-        {
-            System.Console.WriteLine("interruption started");
-        }
-        #endregion
-    }
+    //    [Export("sessionWasInterrupted:")]
+    //    public static void WasInterrupted(this IARSessionObserver This, ARSession session)
+    //    {
+    //        System.Console.WriteLine("interruption started");
+    //    }
+    //    #endregion
+    //}
 }

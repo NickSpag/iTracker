@@ -20,13 +20,11 @@ namespace iTracker
 
         }
 
-        private SCNNode faceNode;
-
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
 
-            arView.Delegate = new SessionDelegate();
+            //arView.Delegate = new SessionDelegate();
 
         }
 

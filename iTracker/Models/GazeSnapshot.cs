@@ -1,98 +1,108 @@
-﻿using System;
-using Microsoft.WindowsAzure.Storage.Table;
+﻿using Microsoft.WindowsAzure.Storage.Table;
 using CoreGraphics;
 using ARKit;
 using OpenTK;
+using System;
+
 namespace iTracker
 {
     public class GazeSnapshot : TableEntity
     {
         public GazeSnapshot()
         {
+            this.Timestamp = DateTimeOffset.UtcNow;
         }
 
-        private double xPoint;
-        private double yPoint;
+        public GazeSnapshot(ARFaceAnchor anchor, CGPoint gazePoint)
+        {
+            SetGazeTarget(gazePoint);
+
+            SetTransform(anchor.Transform);
+            SetBlendingShapes(anchor.BlendShapes);
+        }
+
+        public double xPoint { get; set; }
+        public double yPoint { get; set; }
 
         #region Blend Shapes
-        public float? BrowDownLeft { get; set; }
-        public float? BrowDownRight { get; set; }
-        public float? BrowInnerUp { get; set; }
-        public float? BrowOuterUpLeft { get; set; }
-        public float? BrowOuterUpRight { get; set; }
+        public double BrowDownLeft { get; set; }
+        public double BrowDownRight { get; set; }
+        public double BrowInnerUp { get; set; }
+        public double BrowOuterUpLeft { get; set; }
+        public double BrowOuterUpRight { get; set; }
 
-        public float? CheekPuff { get; set; }
-        public float? CheekSquintLeft { get; set; }
-        public float? CheekSquintRight { get; set; }
+        public double CheekPuff { get; set; }
+        public double CheekSquintLeft { get; set; }
+        public double CheekSquintRight { get; set; }
 
-        public float? EyeBlinkLeft { get; set; }
-        public float? EyeBlinkRight { get; set; }
-        public float? EyeLookDownLeft { get; set; }
-        public float? EyeLookDownRight { get; set; }
-        public float? EyeLookInLeft { get; set; }
-        public float? EyeLookInRight { get; set; }
-        public float? EyeLookOutLeft { get; set; }
-        public float? EyeLookOutRight { get; set; }
-        public float? EyeLookUpLeft { get; set; }
-        public float? EyeLookUpRight { get; set; }
-        public float? EyeSquintLeft { get; set; }
-        public float? EyeSquintRight { get; set; }
-        public float? EyeWideLeft { get; set; }
-        public float? EyeWideRight { get; set; }
+        public double EyeBlinkLeft { get; set; }
+        public double EyeBlinkRight { get; set; }
+        public double EyeLookDownLeft { get; set; }
+        public double EyeLookDownRight { get; set; }
+        public double EyeLookInLeft { get; set; }
+        public double EyeLookInRight { get; set; }
+        public double EyeLookOutLeft { get; set; }
+        public double EyeLookOutRight { get; set; }
+        public double EyeLookUpLeft { get; set; }
+        public double EyeLookUpRight { get; set; }
+        public double EyeSquintLeft { get; set; }
+        public double EyeSquintRight { get; set; }
+        public double EyeWideLeft { get; set; }
+        public double EyeWideRight { get; set; }
 
-        public float? JawForward { get; set; }
-        public float? JawLeft { get; set; }
-        public float? JawOpen { get; set; }
-        public float? JawRight { get; set; }
+        public double JawForward { get; set; }
+        public double JawLeft { get; set; }
+        public double JawOpen { get; set; }
+        public double JawRight { get; set; }
 
-        public float? MouthClose { get; set; }
-        public float? MouthDimpleLeft { get; set; }
-        public float? MouthDimpleRight { get; set; }
-        public float? MouthFrownLeft { get; set; }
-        public float? MouthFrownRight { get; set; }
-        public float? MouthFunnel { get; set; }
-        public float? MouthLeft { get; set; }
-        public float? MouthLowerDownLeft { get; set; }
-        public float? MouthLowerDownRight { get; set; }
-        public float? MouthPressLeft { get; set; }
-        public float? MouthPressRight { get; set; }
-        public float? MouthPucker { get; set; }
-        public float? MouthRight { get; set; }
-        public float? MouthRollLower { get; set; }
-        public float? MouthRollUpper { get; set; }
-        public float? MouthShrugLower { get; set; }
-        public float? MouthShrugUpper { get; set; }
-        public float? MouthSmileLeft { get; set; }
-        public float? MouthSmileRight { get; set; }
-        public float? MouthStretchLeft { get; set; }
-        public float? MouthStretchRight { get; set; }
-        public float? MouthUpperUpLeft { get; set; }
-        public float? MouthUpperUpRight { get; set; }
+        public double MouthClose { get; set; }
+        public double MouthDimpleLeft { get; set; }
+        public double MouthDimpleRight { get; set; }
+        public double MouthFrownLeft { get; set; }
+        public double MouthFrownRight { get; set; }
+        public double MouthFunnel { get; set; }
+        public double MouthLeft { get; set; }
+        public double MouthLowerDownLeft { get; set; }
+        public double MouthLowerDownRight { get; set; }
+        public double MouthPressLeft { get; set; }
+        public double MouthPressRight { get; set; }
+        public double MouthPucker { get; set; }
+        public double MouthRight { get; set; }
+        public double MouthRollLower { get; set; }
+        public double MouthRollUpper { get; set; }
+        public double MouthShrugLower { get; set; }
+        public double MouthShrugUpper { get; set; }
+        public double MouthSmileLeft { get; set; }
+        public double MouthSmileRight { get; set; }
+        public double MouthStretchLeft { get; set; }
+        public double MouthStretchRight { get; set; }
+        public double MouthUpperUpLeft { get; set; }
+        public double MouthUpperUpRight { get; set; }
 
-        public float? NoseSneerLeft { get; set; }
-        public float? NoseSneerRight { get; set; }
+        public double NoseSneerLeft { get; set; }
+        public double NoseSneerRight { get; set; }
         #endregion
 
         #region Transform Matrix
-        public float M11 { get; set; }
-        public float M12 { get; set; }
-        public float M13 { get; set; }
-        public float M14 { get; set; }
+        public double M11 { get; set; }
+        public double M12 { get; set; }
+        public double M13 { get; set; }
+        public double M14 { get; set; }
 
-        public float M21 { get; set; }
-        public float M22 { get; set; }
-        public float M23 { get; set; }
-        public float M24 { get; set; }
+        public double M21 { get; set; }
+        public double M22 { get; set; }
+        public double M23 { get; set; }
+        public double M24 { get; set; }
 
-        public float M31 { get; set; }
-        public float M32 { get; set; }
-        public float M33 { get; set; }
-        public float M34 { get; set; }
+        public double M31 { get; set; }
+        public double M32 { get; set; }
+        public double M33 { get; set; }
+        public double M34 { get; set; }
 
-        public float M41 { get; set; }
-        public float M42 { get; set; }
-        public float M43 { get; set; }
-        public float M44 { get; set; }
+        public double M41 { get; set; }
+        public double M42 { get; set; }
+        public double M43 { get; set; }
+        public double M44 { get; set; }
         #endregion
 
         public void SetGazeTarget(CGPoint point)
@@ -124,66 +134,64 @@ namespace iTracker
             M44 = transformMatrix.M44;
         }
 
-        public void SetBlendingShapes(ARFaceAnchor anchor)
+        public void SetBlendingShapes(ARBlendShapeLocationOptions shapes)
         {
-            var shapes = anchor.BlendShapes;
+            BrowDownLeft = (double)shapes.BrowDownLeft;
+            BrowDownRight = (double)shapes.BrowDownRight;
+            BrowInnerUp = (double)shapes.BrowInnerUp;
+            BrowOuterUpLeft = (double)shapes.BrowOuterUpLeft;
+            BrowOuterUpRight = (double)shapes.BrowOuterUpRight;
 
-            BrowDownLeft = shapes.BrowDownLeft;
-            BrowDownRight = shapes.BrowDownRight;
-            BrowInnerUp = shapes.BrowInnerUp;
-            BrowOuterUpLeft = shapes.BrowOuterUpLeft;
-            BrowOuterUpRight = shapes.BrowOuterUpRight;
+            CheekPuff = (double)shapes.CheekPuff;
+            CheekSquintLeft = (double)shapes.CheekSquintLeft;
+            CheekSquintRight = (double)shapes.CheekSquintRight;
 
-            CheekPuff = shapes.CheekPuff;
-            CheekSquintLeft = shapes.CheekSquintLeft;
-            CheekSquintRight = shapes.CheekSquintRight;
+            EyeBlinkLeft = (double)shapes.EyeBlinkLeft;
+            EyeBlinkRight = (double)shapes.EyeBlinkRight;
+            EyeLookDownLeft = (double)shapes.EyeLookDownLeft;
+            EyeLookDownRight = (double)shapes.EyeLookDownRight;
+            EyeLookInLeft = (double)shapes.EyeLookInLeft;
+            EyeLookInRight = (double)shapes.EyeLookInRight;
+            EyeLookOutLeft = (double)shapes.EyeLookOutLeft;
+            EyeLookOutRight = (double)shapes.EyeLookOutRight;
+            EyeLookUpLeft = (double)shapes.EyeLookUpLeft;
+            EyeLookUpRight = (double)shapes.EyeLookUpRight;
+            EyeSquintLeft = (double)shapes.EyeSquintLeft;
+            EyeSquintRight = (double)shapes.EyeSquintRight;
+            EyeWideLeft = (double)shapes.EyeWideLeft;
+            EyeWideRight = (double)shapes.EyeWideRight;
 
-            EyeBlinkLeft = shapes.EyeBlinkLeft;
-            EyeBlinkRight = shapes.EyeBlinkRight;
-            EyeLookDownLeft = shapes.EyeLookDownLeft;
-            EyeLookDownRight = shapes.EyeLookDownRight;
-            EyeLookInLeft = shapes.EyeLookInLeft;
-            EyeLookInRight = shapes.EyeLookInRight;
-            EyeLookOutLeft = shapes.EyeLookOutLeft;
-            EyeLookOutRight = shapes.EyeLookOutRight;
-            EyeLookUpLeft = shapes.EyeLookUpLeft;
-            EyeLookUpRight = shapes.EyeLookUpRight;
-            EyeSquintLeft = shapes.EyeSquintLeft;
-            EyeSquintRight = shapes.EyeSquintRight;
-            EyeWideLeft = shapes.EyeWideLeft;
-            EyeWideRight = shapes.EyeWideRight;
+            JawForward = (double)shapes.JawForward;
+            JawLeft = (double)shapes.JawLeft;
+            JawOpen = (double)shapes.JawOpen;
+            JawRight = (double)shapes.JawRight;
 
-            JawForward = shapes.JawForward;
-            JawLeft = shapes.JawLeft;
-            JawOpen = shapes.JawOpen;
-            JawRight = shapes.JawRight;
+            MouthClose = (double)shapes.MouthClose;
+            MouthDimpleLeft = (double)shapes.MouthDimpleLeft;
+            MouthDimpleRight = (double)shapes.MouthDimpleRight;
+            MouthFrownLeft = (double)shapes.MouthFrownLeft;
+            MouthFrownRight = (double)shapes.MouthFrownRight;
+            MouthFunnel = (double)shapes.MouthFunnel;
+            MouthLeft = (double)shapes.MouthLeft;
+            MouthLowerDownLeft = (double)shapes.MouthLowerDownLeft;
+            MouthLowerDownRight = (double)shapes.MouthLowerDownRight;
+            MouthPressLeft = (double)shapes.MouthPressLeft;
+            MouthPressRight = (double)shapes.MouthPressRight;
+            MouthPucker = (double)shapes.MouthPucker;
+            MouthRight = (double)shapes.MouthRight;
+            MouthRollLower = (double)shapes.MouthRollLower;
+            MouthRollUpper = (double)shapes.MouthRollUpper;
+            MouthShrugLower = (double)shapes.MouthShrugLower;
+            MouthShrugUpper = (double)shapes.MouthShrugUpper;
+            MouthSmileLeft = (double)shapes.MouthSmileLeft;
+            MouthSmileRight = (double)shapes.MouthSmileRight;
+            MouthStretchLeft = (double)shapes.MouthStretchLeft;
+            MouthStretchRight = (double)shapes.MouthStretchRight;
+            MouthUpperUpLeft = (double)shapes.MouthUpperUpLeft;
+            MouthUpperUpRight = (double)shapes.MouthUpperUpRight;
 
-            MouthClose = shapes.MouthClose;
-            MouthDimpleLeft = shapes.MouthDimpleLeft;
-            MouthDimpleRight = shapes.MouthDimpleRight;
-            MouthFrownLeft = shapes.MouthFrownLeft;
-            MouthFrownRight = shapes.MouthFrownRight;
-            MouthFunnel = shapes.MouthFunnel;
-            MouthLeft = shapes.MouthLeft;
-            MouthLowerDownLeft = shapes.MouthLowerDownLeft;
-            MouthLowerDownRight = shapes.MouthLowerDownRight;
-            MouthPressLeft = shapes.MouthPressLeft;
-            MouthPressRight = shapes.MouthPressRight;
-            MouthPucker = shapes.MouthPucker;
-            MouthRight = shapes.MouthRight;
-            MouthRollLower = shapes.MouthRollLower;
-            MouthRollUpper = shapes.MouthRollUpper;
-            MouthShrugLower = shapes.MouthShrugLower;
-            MouthShrugUpper = shapes.MouthShrugUpper;
-            MouthSmileLeft = shapes.MouthSmileLeft;
-            MouthSmileRight = shapes.MouthSmileRight;
-            MouthStretchLeft = shapes.MouthStretchLeft;
-            MouthStretchRight = shapes.MouthStretchRight;
-            MouthUpperUpLeft = shapes.MouthUpperUpLeft;
-            MouthUpperUpRight = shapes.MouthUpperUpRight;
-
-            NoseSneerLeft = shapes.NoseSneerLeft;
-            NoseSneerRight = shapes.NoseSneerRight;
+            NoseSneerLeft = (double)shapes.NoseSneerLeft;
+            NoseSneerRight = (double)shapes.NoseSneerRight;
         }
     }
 }
