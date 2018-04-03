@@ -13,7 +13,6 @@ namespace iTracker
 
         private static CloudTableClient TableClient()
         {
-            //var storageAccount = Microsoft.Azure.Storage.CloudStorageAccount.Parse(PrivateKeys.StorageConnection);
             var storageAccount1 = Microsoft.WindowsAzure.Storage.CloudStorageAccount.Parse(PrivateKeys.StorageConnection);
             return storageAccount1.CreateCloudTableClient();
         }
@@ -37,7 +36,7 @@ namespace iTracker
             }
         }
 
-        public static async Task UploadSnapshots(List<GazeSnapshot> snapshots)
+        public static async Task UploadSnapshots(List<GazeTrainingSnapshot> snapshots)
         {
             EstablishTable();
 

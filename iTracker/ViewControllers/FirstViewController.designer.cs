@@ -9,32 +9,43 @@ using System.CodeDom.Compiler;
 
 namespace iTracker
 {
-	[Register ("FirstViewController")]
-	partial class FirstViewController
-	{
-		[Outlet]
-		UIKit.UIButton StartTrackingButton { get; set; }
+    [Register("FirstViewController")]
+    partial class FirstViewController
+    {
+        [Outlet]
+        UIKit.UIButton StartTrackingButton { get; set; }
 
-		[Outlet]
-		UIKit.UIView TrackingGuideBox { get; set; }
+        [Outlet]
+        UIKit.UIButton TestingButton { get; set; }
 
-		[Action ("NextClicked:")]
-		partial void NextClicked (Foundation.NSObject sender);
+        [Outlet]
+        UIKit.UIView TrackingGuideBox { get; set; }
 
-		[Action ("StartTrackingClicked:")]
-		partial void StartTrackingClicked (Foundation.NSObject sender);
-		
-		void ReleaseDesignerOutlets ()
-		{
-			if (StartTrackingButton != null) {
-				StartTrackingButton.Dispose ();
-				StartTrackingButton = null;
-			}
+        [Action("StartTrackingClicked:")]
+        partial void StartTrackingClicked(Foundation.NSObject sender);
 
-			if (TrackingGuideBox != null) {
-				TrackingGuideBox.Dispose ();
-				TrackingGuideBox = null;
-			}
-		}
-	}
+        [Action("TestingButtonClicked:")]
+        partial void TestingButtonClicked(Foundation.NSObject sender);
+
+        void ReleaseDesignerOutlets()
+        {
+            if (StartTrackingButton != null)
+            {
+                StartTrackingButton.Dispose();
+                StartTrackingButton = null;
+            }
+
+            if (TrackingGuideBox != null)
+            {
+                TrackingGuideBox.Dispose();
+                TrackingGuideBox = null;
+            }
+
+            if (TestingButton != null)
+            {
+                TestingButton.Dispose();
+                TestingButton = null;
+            }
+        }
+    }
 }

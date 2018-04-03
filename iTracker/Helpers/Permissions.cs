@@ -9,20 +9,19 @@ namespace iTracker
     {
         public static class Permissions
         {
-
-            public static async Task<bool> IsCameraPermissionGranted()
+            public static async Task<bool> IsGranted(Permission permission)
             {
-                return (await CrossPermissions.Current.CheckPermissionStatusAsync(Permission.Camera) == PermissionStatus.Granted);
+                return (await CrossPermissions.Current.CheckPermissionStatusAsync(permission) == PermissionStatus.Granted);
             }
 
-            public async static Task<bool> RequestCameraPermission()
+            public static async Task<bool> Request(Permission permission)
             {
-                var results = await CrossPermissions.Current.RequestPermissionsAsync(Permission.Camera);
+                var results = await CrossPermissions.Current.RequestPermissionsAsync(permission);
 
                 bool status = false;
 
-                if (results.ContainsKey(Permission.Camera))
-                    status = (results[Permission.Camera] == PermissionStatus.Granted);
+                if (results.ContainsKey(permission))
+                    status = (results[permission] == PermissionStatus.Granted);
 
                 return status;
             }

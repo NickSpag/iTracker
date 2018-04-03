@@ -118,6 +118,8 @@
     <Folder Include="ViewControllers\" />
     <Folder Include="Classes\" />
     <Folder Include="Views\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Enum\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Storyboards\LaunchScreen.storyboard" />
@@ -132,7 +134,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="Helpers\Permissions.cs" />
-    <Compile Include="Models\GazeSnapshot.cs" />
+    <Compile Include="Models\GazeTrainingSnapshot.cs" />
     <Compile Include="Helpers\PrivateKeys.cs" />
     <Compile Include="Services\AzureTableStorage.cs" />
     <Compile Include="ViewControllers\FirstViewController.cs" />
@@ -153,6 +155,19 @@
       <DependentUpon>TrackingView.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\GazeTrackingSession.cs" />
+    <Compile Include="Helpers\PathDrawing.cs" />
+    <Compile Include="Models\GazePredictionInput.cs" />
+    <Compile Include="Interfaces\IGazeSnapshot.cs" />
+    <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Enum\GazeTrackingSessionType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\xModel.mlmodelc\coremldata.bin" />
+    <BundleResource Include="Resources\xModel.mlmodelc\model0\coremldata.bin" />
+    <BundleResource Include="Resources\xModel.mlmodelc\model1\coremldata.bin" />
+    <BundleResource Include="Resources\yModel.mlmodelc\coremldata.bin" />
+    <BundleResource Include="Resources\yModel.mlmodelc\model0\coremldata.bin" />
+    <BundleResource Include="Resources\yModel.mlmodelc\model1\coremldata.bin" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

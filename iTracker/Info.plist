@@ -42,5 +42,7 @@
 	<string>Microphone usage</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Have to provide a description for calendar access. This will never appear, as calendar access is never requested.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Using Gyroscope/Magnetometer to determine device orientation in relation to face</string>
 </dict>
 </plist>

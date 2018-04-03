@@ -10,6 +10,7 @@ using CoreVideo;
 using VideoToolbox;
 using CoreMedia;
 using CoreImage;
+using Plugin.Permissions.Abstractions;
 
 namespace iTracker
 {
@@ -33,13 +34,16 @@ namespace iTracker
             FirstActivityIndicator.Hidden = true;
             SecondActivityIndicator.Hidden = true;
 
-            var cameraPermissionGranted = await Help.Permissions.IsCameraPermissionGranted();
+            //var cameraPermissionGranted = await Help.Permissions.IsCameraPermissionGranted();
 
-            if (!cameraPermissionGranted)
-                cameraPermissionGranted = await Help.Permissions.RequestCameraPermission();
+            //if (!await Help.Permissions.IsGranted(Permission.Camera))
+            //{
+            //    var hasCameraAccess = await Help.Permissions.RequestCameraPermission();
+            //}
+            //cameraPermissionGranted = await Help.Permissions.RequestCameraPermission();
 
-            if (cameraPermissionGranted)
-                StartTrackingFace();
+            //if (cameraPermissionGranted)
+            //StartTrackingFace();
         }
 
         public override void DidReceiveMemoryWarning()

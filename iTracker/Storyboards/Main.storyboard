@@ -48,6 +48,17 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6qw-9A-5MC">
                                 <rect key="frame" x="0.0" y="728" width="375" height="50"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YO7-pe-wPm">
+                                        <rect key="frame" x="238" y="10" width="30" height="30"/>
+                                        <state key="normal" title="Test">
+                                            <color key="titleColor" red="0.50196081400000003" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="TestingButtonClicked:" destination="9pv-A4-QxB" eventType="touchUpInside" id="VLQ-Q9-I8T"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
                                 <color key="backgroundColor" red="1" green="0.80000001190000003" blue="0.40000000600000002" alpha="0.35882381134969327" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="pco-E9-rKS"/>
@@ -59,7 +70,7 @@
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v1y-Eb-L6l">
                                 <rect key="frame" x="300" y="738" width="34" height="30"/>
-                                <state key="normal" title="Start">
+                                <state key="normal" title="Train">
                                     <color key="titleColor" red="0.50196081400000003" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
@@ -71,6 +82,7 @@
                         <constraints>
                             <constraint firstItem="3WH-96-M4B" firstAttribute="top" secondItem="tsR-hK-woN" secondAttribute="top" constant="30" id="0v1-nD-2o5"/>
                             <constraint firstAttribute="trailing" secondItem="6qw-9A-5MC" secondAttribute="trailing" id="3m0-rE-KWW"/>
+                            <constraint firstItem="YO7-pe-wPm" firstAttribute="centerY" secondItem="v1y-Eb-L6l" secondAttribute="centerY" id="4FK-In-Wx4"/>
                             <constraint firstItem="6qw-9A-5MC" firstAttribute="top" secondItem="3WH-96-M4B" secondAttribute="bottom" id="9ox-Xb-RMU"/>
                             <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="6qw-9A-5MC" secondAttribute="bottom" id="NUh-yJ-fQ7"/>
                             <constraint firstItem="3WH-96-M4B" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leading" id="Otb-7T-HE9"/>
@@ -78,11 +90,13 @@
                             <constraint firstAttribute="trailing" secondItem="3WH-96-M4B" secondAttribute="trailing" id="TdH-P9-jtD"/>
                             <constraint firstItem="6qw-9A-5MC" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leading" id="V9c-7D-NGf"/>
                             <constraint firstItem="v1y-Eb-L6l" firstAttribute="centerY" secondItem="tsR-hK-woN" secondAttribute="centerY" constant="347" id="lX5-ET-t66"/>
+                            <constraint firstItem="v1y-Eb-L6l" firstAttribute="leading" secondItem="YO7-pe-wPm" secondAttribute="trailing" constant="32" id="xiZ-9z-lyp"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="First" image="First" id="acW-dT-cKf"/>
                     <connections>
                         <outlet property="StartTrackingButton" destination="v1y-Eb-L6l" id="QO5-66-TVf"/>
+                        <outlet property="TestingButton" destination="YO7-pe-wPm" id="Lq8-nl-UVi"/>
                         <outlet property="TrackingGuideBox" destination="3WH-96-M4B" id="oM4-W6-STB"/>
                     </connections>
                 </viewController>

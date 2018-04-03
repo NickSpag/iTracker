@@ -5,51 +5,90 @@ using CoreGraphics;
 using UIKit;
 using ARKit;
 using System.Threading.Tasks;
-using System.Threading;
+using CoreML;
+using Foundation;
+using CoreMotion;
 
 namespace iTracker
 {
     public class GazeTrackingSession
     {
         private Random randomizer = new Random();
-        private const double sessionDurationInSeconds = 14;
 
+        private double sessionDurationInSeconds = 20;
         private ARSession currentSession;
         private ARKitSessionDelegate currentSessionDelegate;
+        private CMMotionManager motionManager = new CMMotionManager();
+
+        private CAShapeLayer trackingDot;
+        private CAShapeLayer testingDot;
+
+        private MLModel yModel;
+        private MLModel xModel;
 
         public GazeTrackingSession()
         {
 
         }
 
-
-        public async Task RunInView(UIView view)
+        public async Task RunTesting(UIView view)
         {
-            PrepareSession();
+            if (testingDot == null)
+            {
+                testingDot = CreateTestingDot(new CGPoint(0, 0));
+            }
 
-            var grid = CreateGridFromView(view);
-            var drawnPath = DrawStraightPathThroughGrid(grid);
+            if (trackingDot == null)
+            {
+                trackingDot = CreateTrackingDotAt(new CGPoint(randomizer.Next(0, (int)view.Bounds.Width),
+                                                              randomizer.Next(0, (int)view.Bounds.Height)));
+            }
+
+            view.Layer.AddSublayer(testingDot);
+            view.Layer.AddSublayer(trackingDot);
+
+            PrepareARSession();
+            PrepareCoreMLModel();
+
+            BeginMotionSession();
+            RunSession();
+
+            await Task.Run(() => MonitorGazeForTesting());
+
+            testingDot.RemoveFromSuperLayer();
+            trackingDot.RemoveFromSuperLayer();
+
+            EndSession();
+        }
+
+        public async Task RunTraining(UIView view)
+        {
+            PrepareARSession();
+
+            var grid = Help.PathDrawing.CreateGridFromView(view);
+            var drawnPath = Help.PathDrawing.DrawPathThroughGrid(grid, view);
             var animation = CreateTrackingAnimation(drawnPath.Path);
 
             dot = CreateTrackingDotAt(drawnPath.StartingPoint);
-
             view.Layer.AddSublayer(dot);
 
+            BeginMotionSession();
+
             RunSession();
+
+
 
             dot.AddAnimation(animation, "position");
             dot.Position = drawnPath.EndingPoint;
 
-            await Task.Run(() => MonitorGaze(dot));
+            await Task.Run(() => MonitorGazeForTraining());
 
             dot.RemoveFromSuperLayer();
 
             EndSession();
         }
 
-
-
-        private void PrepareSession()
+        private void PrepareARSession()
         {
             currentSession = new ARSession();
             currentSessionDelegate = new ARKitSessionDelegate();
@@ -70,7 +109,6 @@ namespace iTracker
                 currentSession.Pause();
                 currentSession = null;
             }
-
             if (currentSessionDelegate != null)
             {
                 currentSessionDelegate = null;
@@ -81,16 +119,16 @@ namespace iTracker
         private int count = 1;
         private int totalCount = 1;
         private object snapshotPadlock = new object();
-        List<GazeSnapshot> snapshots = new List<GazeSnapshot>();
+        List<GazeTrainingSnapshot> snapshots = new List<GazeTrainingSnapshot>();
         string sessionKey = Guid.NewGuid().ToString();
         CAShapeLayer dot;
 
         public async void AnchorUpdated(ARFaceAnchor faceAnchor)
         {
-            var gaze = new GazeSnapshot(faceAnchor,
-                                        //must use the presentation layer to get position during an animation
-                                        dot.PresentationLayer.Position);
-
+            var gaze = new GazeTrainingSnapshot(faceAnchor,
+                                        //must use the presentation layer to get position *during* an animation
+                                        dot.PresentationLayer.Position,
+                                        motionManager.DeviceMotion.Attitude);
 
             gaze.PartitionKey = sessionKey;
             gaze.RowKey = totalCount.ToString();
@@ -98,7 +136,7 @@ namespace iTracker
             snapshots.Add(gaze);
             System.Console.WriteLine($"Snapshot at {dot.PresentationLayer.Position} taken. {count} in batch, total: {totalCount}.");
 
-            List<GazeSnapshot> snapshotBatch = null;
+            List<GazeTrainingSnapshot> snapshotBatch = null;
 
             lock (snapshotPadlock)
             {
@@ -108,7 +146,7 @@ namespace iTracker
                 if (count > 99)
                 {
                     snapshotBatch = snapshots;
-                    snapshots = new List<GazeSnapshot>();
+                    snapshots = new List<GazeTrainingSnapshot>();
 
                     count = 1;
                 }
@@ -127,17 +165,75 @@ namespace iTracker
             }
         }
 
-        private async Task MonitorGaze(CAShapeLayer dot1)
+        private void PrepareCoreMLModel()
         {
-            //int count = 0;
-            //int totalCount = 0;
+            var xModelPath = NSBundle.MainBundle.GetUrlForResource("xModel", "mlmodelc");
+            var yModelPath = NSBundle.MainBundle.GetUrlForResource("yModel", "mlmodelc");
 
+            xModel = MLModel.Create(xModelPath, out NSError xModelErrors);
+            System.Console.WriteLine(xModel);
+
+            yModel = MLModel.Create(yModelPath, out NSError yModelErrors);
+            System.Console.WriteLine(yModel);
+        }
+
+        public void MakePrediction(ARFaceAnchor faceAnchor)
+        {
+            if (testingDot == null) return;
+
+            var gaze = GazePredictionInput.FromAnchor(faceAnchor, motionManager.DeviceMotion.Attitude);
+
+            try
+            {
+                var yPrediction = yModel.GetPrediction(gaze, out NSError yPredictionError);
+                var yResult = yPrediction.GetFeatureValue("yPoint").DoubleValue;
+
+                var xPrediction = xModel.GetPrediction(gaze, out NSError xPredictionError);
+                var xResult = xPrediction.GetFeatureValue("xPoint").DoubleValue;
+
+                System.Console.WriteLine($"Prediction is: ({xResult}, {yResult}");
+
+                testingDot.Position = new CGPoint(xResult, yResult);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex);
+            }
+        }
+
+        private void AddTestDotToView(double x, double y)
+        {
+            CreateTestingDot(new CGPoint(x, y));
+        }
+
+        private async Task MonitorGazeForTesting()
+        {
+            if (currentSessionDelegate != null)
+            {
+
+                currentSessionDelegate.StartBroadcastingAnchor(MakePrediction);
+
+                await Task.Delay(TimeSpan.FromSeconds(sessionDurationInSeconds - .6));
+
+                currentSessionDelegate.StopBroadcastingAnchor();
+            }
+        }
+
+        private void BeginMotionSession()
+        {
+            if (motionManager.GyroAvailable)
+            {
+                motionManager.StartDeviceMotionUpdates(CMAttitudeReferenceFrame.XMagneticNorthZVertical);
+            }
+            else
+            {
+                System.Console.WriteLine("Gyroscope not available");
+            }
+        }
+
+        private async Task MonitorGazeForTraining()
+        {
             sessionKey = Guid.NewGuid().ToString();
-
-            //var snapshotPadlock = new Object();
-            //List<GazeSnapshot> snapshots = new List<GazeSnapshot>();
-
-            //var timer = new Timer(5);
 
             if (currentSessionDelegate != null)
             {
@@ -147,49 +243,9 @@ namespace iTracker
 
                 currentSessionDelegate.StopBroadcastingAnchor();
             }
-
-            //         await Task.Delay(TimeSpan.FromSeconds(sessionDurationInSeconds - .6));
-
-            //void TakeGazeSnapshot(object sender, ElapsedEventArgs e)
-            //{
-
-            //    UIApplication.SharedApplication.BeginInvokeOnMainThread(() =>
-            //    {
-
-            //    });
-            //    var gaze = new GazeSnapshot(currentSessionDelegate.FaceAnchor,
-            //                                //must use the presentation layer to get position during an animation
-            //                                dot.PresentationLayer.AnchorPoint);
-
-            //    gaze.PartitionKey = sessionKey;
-            //    gaze.RowKey = totalCount.ToString();
-
-            //    snapshots.Add(gaze);
-
-            //    lock (snapshotPadlock)
-            //    {
-            //        if (count >= 100)
-            //        {
-            //            List<GazeSnapshot> snapshotBatch;
-
-            //            snapshotBatch = snapshots;
-            //            snapshots = new List<GazeSnapshot>();
-
-            //            //                        System.Console.WriteLine("Recording");
-            //            Task.Run(() => RecordGazeSnapshots(snapshotBatch));
-
-            //            count = 0;
-            //        }
-
-            //        count++;
-            //        totalCount++;
-
-            //        System.Console.WriteLine($"Snapping - {totalCount}");
-            //    }
-            //}
         }
 
-        private async Task RecordGazeSnapshots(List<GazeSnapshot> batch)
+        private async Task RecordGazeSnapshots(List<GazeTrainingSnapshot> batch)
         {
             try
             {
@@ -203,163 +259,28 @@ namespace iTracker
         }
         #endregion
 
+        private CAShapeLayer CreateTestingDot(CGPoint point)
+        {
+            var circleLayer = new CAShapeLayer();
+            var circlePath = CGPath.EllipseFromRect(new CGRect(new CGPoint(0, 0), new CGSize(8, 8)));
+
+            circleLayer.AnchorPoint = point;
+            circleLayer.Path = circlePath;
+            circleLayer.FillColor = UIColor.Orange.CGColor;
+
+            return circleLayer;
+        }
+
         private CAShapeLayer CreateTrackingDotAt(CGPoint point)
         {
             var circleLayer = new CAShapeLayer();
             var circlePath = CGPath.EllipseFromRect(new CGRect(new CGPoint(0, 0), new CGSize(8, 8)));
 
-            //circleLayer.Position = new CGPoint(50, 50);
+            circleLayer.Position = point;
             circleLayer.Path = circlePath;
             circleLayer.FillColor = UIColor.Red.CGColor;
 
-            //circleLayer.AnchorPoint = point;
-
             return circleLayer;
-        }
-
-        #region Path Drawing
-        private static int rows = 6;
-        private static int columns = 4;
-
-        private List<CGRect> CreateGridFromView(UIView view)
-        {
-            var gridGuide = new List<CGRect>();
-
-            var gridCellHeight = view.Frame.Height / rows;
-            var gridCellWidth = view.Frame.Width / columns;
-
-            var gridCellSize = new CGSize(gridCellWidth, gridCellHeight);
-
-            nfloat columnStartPosition = 0;
-            nfloat rowStartPosition = 0;
-
-            for (int column = 0; column < columns; column++)
-            {
-                //Uncomment the three comment sections if you want it to be more snake-like, as opposed to top bottom
-                //var evenColumn = (column % 2 == 0);
-
-                for (int row = 0; row < rows; row++)
-                {
-                    var rect = new CGRect(new CGPoint(columnStartPosition, rowStartPosition),
-                                          gridCellSize);
-                    gridGuide.Add(rect);
-
-                    //if (!evenColumn)
-                    //{
-                    //    rowStartPosition -= gridCellHeight;
-                    //}
-                    //else
-                    rowStartPosition += gridCellHeight;
-                }
-
-                //if (evenColumn)
-                //{
-                //    rowStartPosition = view.Frame.Height;
-                //}
-                //else
-                rowStartPosition = 0;
-                columnStartPosition += gridCellWidth;
-            }
-
-            //for (int column = 0; column < columns; column++)
-            //{
-            //    var evenColumn = (column % 2 == 0);
-
-            //    for (int row = 1; row <= rows; row++)
-            //    {
-            //        var rect = new CGRect(new CGPoint(gridCellWidth * column, gridCellHeight * row), gridCellSize);
-
-            //        gridGuide.Add(rect);
-            //    }
-            //}
-
-            return gridGuide;
-        }
-
-
-        private (CGPoint StartingPoint, CGPath Path, CGPoint EndingPoint) DrawStraightPathThroughGrid(List<CGRect> grid)
-        {
-            var path = new CGPath();
-
-            var startingPoint = RandomPointInRect(grid[0]);
-            grid.RemoveAt(0);
-
-            //start at the same starting cell
-            path.MoveToPoint(startingPoint);
-
-            for (int count = 0; count < grid.Count - 1; count++)
-            {
-                path.AddLineToPoint(NextPointFromGrid(count));
-            }
-
-            var endingPoint = NextPointFromGrid(0);
-            path.AddLineToPoint(endingPoint);
-
-            return (startingPoint, path, endingPoint);
-
-            CGPoint NextPointFromGrid(int index)
-            {
-                var rect = grid[index];
-                grid.Remove(rect);
-
-                return RandomPointInRect(rect);
-            }
-
-            CGPoint RandomPointInRect(CGRect rect)
-            {
-                return new CGPoint(randomizer.Next((int)rect.GetMinX(), (int)rect.GetMaxX()),
-                                   randomizer.Next((int)rect.GetMinY(), (int)rect.GetMaxY()));
-            }
-        }
-
-
-        private (CGPoint StartingPoint, CGPath Path) DrawPathThroughGrid(List<CGRect> grid)
-        {
-            var path = new CGPath();
-
-            var startingPoint = RandomPointInRect(grid[0]);
-            grid.RemoveAt(0);
-
-            //start at the same starting cell
-            path.MoveToPoint(startingPoint);
-
-            var previousPoint = startingPoint;
-            bool first = true;
-
-            while (grid.Count > 0)
-            {
-                var rect = grid[randomizer.Next(grid.Count)];
-                var point = RandomPointInRect(rect);
-
-                var midPoint = MidPointForPoints(startingPoint, point);
-
-                if (first)
-                {
-                    path.AddLineToPoint(midPoint);
-                    first = false;
-                }
-                else
-                {
-                    path.AddQuadCurveToPoint(previousPoint.X, previousPoint.Y, midPoint.X, midPoint.Y);
-                }
-
-                grid.Remove(rect);
-                previousPoint = point;
-            }
-
-            return (startingPoint, path);
-
-            CGPoint RandomPointInRect(CGRect rect)
-            {
-                return new CGPoint(randomizer.Next((int)rect.GetMinX(), (int)rect.GetMaxX()),
-                                   randomizer.Next((int)rect.GetMinY(), (int)rect.GetMaxY()));
-            }
-
-            CGPoint MidPointForPoints(CGPoint one, CGPoint two)
-            {
-                return new CGPoint((one.X + two.X) / 2,
-                                   (one.Y + two.Y) / 2);
-            }
         }
 
         private CAKeyFrameAnimation CreateTrackingAnimation(CGPath path)
@@ -370,9 +291,5 @@ namespace iTracker
 
             return animation;
         }
-
-        #endregion
-
     }
-
 }
